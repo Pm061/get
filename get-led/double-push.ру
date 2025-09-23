@@ -1,0 +1,39 @@
+import RPi.GPIO as GPIO, time
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
+bits = [16,25,17,27,23,22,24,18]
+btn_up, btn_down = 9, 10
+
+for p in bits: GPIO.setup(p, GPIO.OUT); GPIO.output(p,0)
+GPIO.setup(btn_up, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(btn_down, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+def show(v):
+    for k,p in enumerate(bits):
+        GPIO.output(p, (v>>k)&1)
+
+try:
+    val = 0
+    show(val)
+    while True:
+        up = not GPIO.input(btn_up)
+        dn = not GPIO.input(btn_down)
+        if up and dn:
+            val = 255
+            show(val)
+            time.sleep(0.25)
+        elif up:
+            val = (val + 1) % 256
+            show(val)
+            time.sleep(0.2)
+        elif dn:
+            val = (val - 1) % 256
+            show(val)
+            time.sleep(0.2)
+        else:
+            time.sleep(0.02)
+finally:
+    for p in bits: GPIO.output(p,0)
+    GPIO.cleanup()

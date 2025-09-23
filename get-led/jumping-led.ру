@@ -1,0 +1,26 @@
+import RPi.GPIO as GPIO, time
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
+bits = [16, 25, 17, 27, 23, 22, 24, 18]  # сверху вниз
+for p in bits:
+    GPIO.setup(p, GPIO.OUT)
+    GPIO.output(p, 0)
+
+def show(i):
+    for k,p in enumerate(bits):
+        GPIO.output(p, 1 if k==i else 0)
+
+try:
+    i = 0
+    dir = 1
+    while True:
+        show(i)
+        time.sleep(0.08)
+        i += dir
+        if i == len(bits)-1 or i == 0:
+            dir *= -1
+finally:
+    for p in bits: GPIO.output(p,0)
+    GPIO.cleanup()

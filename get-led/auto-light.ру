@@ -1,0 +1,28 @@
+import RPi.GPIO as GPIO
+import time
+
+# Используем схему нумерации BCM
+GPIO.setmode(GPIO.BCM)
+
+# Номер пина для светодиода
+led = 26
+
+# Номер пина для фототранзистора
+photo = 6
+
+# Настройка GPIO
+GPIO.setup(led, GPIO.OUT)      # Светодиод - выход
+GPIO.setup(photo, GPIO.IN)     # Фототранзистор - вход
+
+try:
+    while True:
+        # Читаем фототранзистор
+        light = GPIO.input(photo)
+
+        # Инвертируем (если светло -> LED выключен, если темно -> LED включён)
+        GPIO.output(led, not light)
+
+        time.sleep(0.1)
+
+except KeyboardInterrupt:
+    GPIO.cleanup()
